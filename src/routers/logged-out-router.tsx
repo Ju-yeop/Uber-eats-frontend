@@ -1,9 +1,61 @@
 import React from "react";
-import { isLoggedInVar } from "../apollo";
+import { useForm } from "react-hook-form";
 
-export const LoggedOutRouter = () => (
-  <div>
-    <h1>Logged out</h1>
-    <button onClick={() => isLoggedInVar(true)}>Log In</button>
-  </div>
-);
+interface IForm {
+  email: string;
+  password: string;
+}
+
+export const LoggedOutRouter = () => {
+  const {
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IForm>();
+
+  const onSubmit = () => {
+    console.log(watch());
+  };
+  const onInValid = () => {
+    console.log(errors);
+    console.log("Can't Create");
+  };
+
+  return (
+    <div>
+      <h1>Logged out</h1>
+      <form onSubmit={handleSubmit(onSubmit, onInValid)}>
+        <div>
+          <input
+            {...register("email", {
+              required: "This is required",
+              pattern: /^[A-Za-z0-9._%+-]+@gmail.com$/,
+            })}
+            name="email"
+            type="email"
+            placeholder="email"
+          />
+          {errors.email?.message && (
+            <span className="font-bold text-red-600">
+              {errors.email?.message}
+            </span>
+          )}
+          {errors.email?.type === "pattern" && (
+            <span className="font-bold text-red-600">Only gmail allowed</span>
+          )}
+        </div>
+        <div>
+          <input
+            {...register("password", { required: true })}
+            name="password"
+            type="password"
+            placeholder="password"
+            required
+          />
+        </div>
+        <button className="bg-yellow-300 text-white">Submit</button>
+      </form>
+    </div>
+  );
+};
