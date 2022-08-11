@@ -1,17 +1,14 @@
-import { gql, useLazyQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Restaurant } from "../../components/restaurant";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
-import {
-  searchRestaurant,
-  searchRestaurantVariables,
-} from "../../__generated__/searchRestaurant";
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { category, categoryVariables } from "../../__generated__/category";
 
-const SEARCH_RESTUARANT = gql`
-  query searchRestaurant($input: SearchRestaurantInput!) {
-    searchRestaurant(input: $input) {
+const CATEGORY_QUERY = gql`
+  query category($input: CategoryInput!) {
+    category(input: $input) {
       ok
       error
       totalPages
@@ -19,45 +16,41 @@ const SEARCH_RESTUARANT = gql`
       restaurants {
         ...RestaurantParts
       }
+      category {
+        ...CategoryParts
+      }
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${CATEGORY_FRAGMENT}
 `;
 
-export const Search = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+export const Category = () => {
+  const params = useParams<{ slug: string }>();
   const [page, setPage] = useState(1);
   const onNextPageClick = () => setPage((current) => current + 1);
   const onPrevPageClick = () => setPage((current) => current - 1);
-  const [callQuery, { loading, data, called }] = useLazyQuery<
-    searchRestaurant,
-    searchRestaurantVariables
-  >(SEARCH_RESTUARANT);
-
-  useEffect(() => {
-    const [_, query] = location.search.split("?term=");
-    if (!query) {
-      return navigate("/", { replace: true });
-    }
-    callQuery({
+  const { data, loading } = useQuery<category, categoryVariables>(
+    CATEGORY_QUERY,
+    {
       variables: {
         input: {
           page: 1,
-          query,
+          slug: params.slug + "",
         },
       },
-    });
-  }, [navigate, location]);
+    }
+  );
+  console.log(data);
   return (
     <>
       <Helmet>
-        <title>Search | Tsuber Eats</title>
+        <title>Category | Tsuber Eats</title>
       </Helmet>
       {!loading && (
         <>
           <div className="grid grid-cols-1 gap-6 mx-10 mb-5 sm:grid-cols-2 lg:grid-cols-3">
-            {data?.searchRestaurant.restaurants?.map((restaurant) => (
+            {data?.category.restaurants?.map((restaurant) => (
               <Restaurant
                 key={restaurant.id + ""}
                 id={restaurant.id + ""}
@@ -79,9 +72,9 @@ export const Search = () => {
               <div></div>
             )}
             <span>
-              Page {page} of {data?.searchRestaurant.totalPages}
+              Page {page} of {data?.category.totalPages}
             </span>
-            {page !== data?.searchRestaurant.totalPages ? (
+            {page !== data?.category.totalPages ? (
               <button
                 onClick={onNextPageClick}
                 className="focus:outline-none font-medium text-2xl"
