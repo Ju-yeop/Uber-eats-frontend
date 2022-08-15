@@ -16,5 +16,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "apollo.config.js"]
+  "include": ["src", "apollo.config.js", "../cypress.d.ts"]
 }
