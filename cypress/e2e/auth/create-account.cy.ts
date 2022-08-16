@@ -20,26 +20,17 @@ describe("Create Account", () => {
       if (operationName && operationName === "createAccountMutation") {
         req.reply((res) => {
           res.send({
-            data: {
-              createAccount: {
-                ok: true,
-                error: null,
-                __typename: "CreateAccountOutput",
-              },
-            },
+            fixture: "auth/create-account.json",
           });
         });
       }
     });
     user.visit("/create-account");
-    user.findByPlaceholderText(/email/i).type("owner@naver.com");
+    user.findByPlaceholderText(/email/i).type("client@naver.com");
     user.findByPlaceholderText(/password/i).type("123");
     user.findByRole("button").click();
     user.wait(1000);
-    user.title().should("eq", "Login | Nuber Eats");
-    user.findByPlaceholderText(/email/i).type("owner@naver.com");
-    user.findByPlaceholderText(/password/i).type("123");
-    user.findByRole("button").click();
-    user.window().its("localStorage.nuber-token").should("be.a", "string");
+    // @ts-ignore
+    user.login("client@naver.com", "123");
   });
 });
