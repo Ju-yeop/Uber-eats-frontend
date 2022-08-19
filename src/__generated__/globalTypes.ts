@@ -24,6 +24,14 @@ export interface CreateAccountInput {
   role: UserRole;
 }
 
+export interface CreateDishInput {
+  name: string;
+  price: number;
+  description: string;
+  options?: DishOptionInputType[] | null;
+  restaurantId: number;
+}
+
 export interface CreateRestaurantInput {
   name: string;
   address?: string | null;
@@ -31,9 +39,24 @@ export interface CreateRestaurantInput {
   categoryName: string;
 }
 
+export interface DishChoiceInputType {
+  name: string;
+  extra?: number | null;
+}
+
+export interface DishOptionInputType {
+  name: string;
+  choices?: DishChoiceInputType[] | null;
+  extra?: number | null;
+}
+
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface MyRestaurantInput {
+  id: number;
 }
 
 export interface RestaurantInput {
