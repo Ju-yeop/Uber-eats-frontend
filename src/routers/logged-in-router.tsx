@@ -7,12 +7,15 @@ import { Category } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
+import { Dashboard } from "../pages/driver/dashboard";
+import { Order } from "../pages/order";
 import { AddDish } from "../pages/owner/add-dish";
 import { AddRestaurants } from "../pages/owner/add-restaurant";
 import { MyRestaurants } from "../pages/owner/my-restaurants";
 import { MyRestaurant } from "../pages/owner/my_restaurant";
 import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
+import { UserRole } from "../__generated__/globalTypes";
 
 const clientRoutes = [
   {
@@ -33,9 +36,12 @@ const clientRoutes = [
   },
 ];
 
+const driverRoutes = [{ path: "/", component: <Dashboard /> }];
+
 const commonRoutes = [
   { path: "/confirm", component: <ConfirmEmail /> },
   { path: "/edit-profile", component: <EditProfile /> },
+  { path: "/orders/:id", component: <Order /> },
 ];
 
 const restaurantRoutes = [
@@ -58,7 +64,7 @@ export const LoggedInRouter = () => {
     <BrowserRouter>
       <Header />
       <Routes>
-        {data.me.role === "Client" &&
+        {data.me.role === UserRole.Client &&
           clientRoutes.map((route) => (
             <Route
               key={route.path}
@@ -66,7 +72,7 @@ export const LoggedInRouter = () => {
               element={route.component}
             />
           ))}
-        {data.me.role === "Owner" &&
+        {data.me.role === UserRole.Owner &&
           restaurantRoutes.map((route) => (
             <Route
               key={route.path}
@@ -74,6 +80,16 @@ export const LoggedInRouter = () => {
               element={route.component}
             />
           ))}
+
+        {data.me.role === UserRole.Delivery &&
+          driverRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={route.component}
+            />
+          ))}
+
         {commonRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.component} />
         ))}
